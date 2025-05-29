@@ -6,7 +6,7 @@
 /*   By: salahian <salahian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 17:02:16 by salahian          #+#    #+#             */
-/*   Updated: 2025/05/27 17:49:16 by salahian         ###   ########.fr       */
+/*   Updated: 2025/05/29 10:43:20 by salahian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,16 +73,12 @@ int main(int ac, char *av[])
 
     data = ft_malloc(sizeof(t_data), 1);
     ft_bzero(data, sizeof(data));
-    // data->nbr_philo = ft_atoi(av[1]);
-    // data->t_die = ft_atoi(av[2]);
-    // data->t_eat = ft_atoi(av[3]);
-    // data->t_sleep = ft_atoi(av[4]);
-    //data->nbr_of_meal = ft_atoi(av[5]);
     if (!parse_arg(av, &data, ac))
     {
-        printf("Error:/n not valid argument\n");
+        printf("Error:\nnot valid argument!\n");
         return (1);
     }
-    create_philo(data);
+    if (!create_philo(data))
+        return (1);
     return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: salahian <salahian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 17:47:24 by salahian          #+#    #+#             */
-/*   Updated: 2025/05/28 15:46:34 by salahian         ###   ########.fr       */
+/*   Updated: 2025/05/29 17:07:45 by salahian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void    ft_bzero(void *s, size_t n)
 
 int     ft_atoi(const char *str, int *flag)
 {
-        long    re;
+        int   re;
         int             i;
 
         i = 0;
@@ -44,7 +44,7 @@ int     ft_atoi(const char *str, int *flag)
         {
                 while (str[i])
                 {
-                        if (re > ((LONG_MAX - (str[i] - '0')) / 10))
+                        if (re > ((INT_MAX - (str[i] - '0')) / 10))
                         {
                                 *flag = 1;
                                 break ;
@@ -60,7 +60,7 @@ int     ft_atoi(const char *str, int *flag)
         }
         else
                 *flag = 1;
-        return ((int)re);
+        return (re);
 }
 
 void    init_philo(t_philo *philo)
@@ -72,8 +72,8 @@ void    init_philo(t_philo *philo)
     philo->last_meal = get_curr_time();
     pthread_mutex_init(&philo->last_meal_mtx, NULL);
     pthread_mutex_init(philo->right_fork, NULL);
-    pthread_mutex_init(&philo->write_mtx, NULL);
-    if (philo->left_fork)
+    //pthread_mutex_init(&philo->write_mtx, NULL);
+    pthread_mutex_init(&philo->fork_mtx, NULL);
         pthread_mutex_init(philo->left_fork, NULL);
 }
 

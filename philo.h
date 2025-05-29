@@ -6,7 +6,7 @@
 /*   By: salahian <salahian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 16:58:51 by salahian          #+#    #+#             */
-/*   Updated: 2025/05/28 14:20:25 by salahian         ###   ########.fr       */
+/*   Updated: 2025/05/29 17:07:34 by salahian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,13 +37,12 @@ typedef struct s_philo
 	size_t			nbr_of_meal;
     int     *fork;
 	int		flag;
-    // int     *left;
-    // int     *right;
+    pthread_mutex_t	fork_mtx;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*is_dead;
 	pthread_mutex_t	last_meal_mtx;
-	pthread_mutex_t	write_mtx;
+	pthread_mutex_t	*write_mtx;
 	pthread_t		philo;
 }					t_philo;
 
@@ -55,17 +54,20 @@ typedef struct s_data
 	int				nbr_philo;
 	size_t			nbr_of_meal;
 	int				index;
+	size_t				*is_dead;
 	pthread_t		monitor;
 	pthread_mutex_t	*fork;
+	pthread_mutex_t	write_mtx;
 	pthread_mutex_t	*dead_mtx;
 	t_philo			**philo;
 }					t_data;
 
-void				create_philo(t_data *data);
+int				create_philo(t_data *data);
 void				*start_routine(void *arg);
 void				*check_philos(void *arg);
 
 /// functions_helper
+void    release_forks(t_philo *philo);
 int					check_is_dead(t_philo *philo, int nbr);
 int					ft_atoi(const char *str, int *flag);
 void				ft_bzero(void *s, size_t n);

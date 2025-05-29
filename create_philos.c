@@ -6,7 +6,7 @@
 /*   By: salahian <salahian@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 18:13:11 by salahian          #+#    #+#             */
-/*   Updated: 2025/05/28 17:02:20 by salahian         ###   ########.fr       */
+/*   Updated: 2025/05/29 17:09:57 by salahian         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,25 +29,9 @@ void    join_every_thread(t_data *data)
         i++;
     }
 }
-/*
-t_philo
 
-ID
-pthred
-int fork
-fork_look
-last_meal_look
-num_of_meals
-t_philo *left
-t_philo *right
-*/
 void    get_the_forks(t_philo **philo, t_data *data)
 {
-    // if (data->nbr_philo == 1)
-    // {
-    //     (*philo)->right_fork = &(data->fork[0]);
-    //     (*philo)->left_fork = NULL;
-    // }
     if ((*philo)->index == data->nbr_philo)
     {
         if (((*philo)->index) % 2 != 0)
@@ -86,26 +70,43 @@ void    start_philo(t_data *data)
    
 }
 
-void    clear_all(t_data *data)
+void clear_all(t_data *data)
 {
-    int     i;
+    int i = 0;
 
-    i = 0;
     while (i < data->nbr_philo)
     {
-        //pthread_mutex_destroy(&data->fork[i]);
-        //if (data->philo[i]->right_fork)
-            //pthread_mutex_destroy(data->philo[i]->right_fork);
-        //if (data->philo[i]->left_fork)
-           // pthread_mutex_destroy(data->philo[i]->left_fork);
         pthread_mutex_destroy(&data->philo[i]->last_meal_mtx);
-        pthread_mutex_destroy(data->philo[i]->is_dead);
         i++;
     }
+
+    // Destroy the shared mutexes only once
+    pthread_mutex_destroy(data->dead_mtx);
+    pthread_mutex_destroy(&data->write_mtx);
+
     ft_lstclear(garbage_list());
 }
 
-void    create_philo(t_data *data)
+
+void    fill_philo(t_data **data, int i)
+{
+    (*data)->philo[i] = ft_malloc(sizeof(t_philo), 1);
+    (*data)->philo[i]->index = i + 1;
+    (*data)->philo[i]->t_eat = (*data)->t_eat;
+    (*data)->philo[i]->t_sleep = (*data)->t_sleep;
+    (*data)->philo[i]->nbr_of_meal = (*data)->nbr_of_meal;
+    (*data)->philo[i]->t_die = (*data)->t_die;
+    (*data)->philo[i]->is_dead = (*data)->dead_mtx;
+    (*data)->philo[i]->write_mtx = &(*data)->write_mtx;
+    (*data)->philo[i]->fork = ft_malloc(sizeof(int), 1);
+    *((*data)->philo[i]->fork) = 1; 
+    (*data)->philo[i]->flag = (*data)->nbr_philo;
+    (*data)->index = i;
+    get_the_forks(&(*data)->philo[i], *data);
+    init_philo((*data)->philo[i]);
+}
+
+int    create_philo(t_data *data)
 {
     int     i;
 
@@ -115,33 +116,20 @@ void    create_philo(t_data *data)
     data->philo[data->nbr_philo] = NULL;
     data->dead_mtx = ft_malloc(sizeof(pthread_mutex_t), 1);
     pthread_mutex_init(data->dead_mtx, NULL);
+    pthread_mutex_init(&data->write_mtx, NULL);
+    data->is_dead = ft_malloc(sizeof(size_t), 3);
+    ft_bzero(data->is_dead, sizeof(size_t));
     i = 0;
     while (i < data->nbr_philo)
     {
-        data->philo[i] = ft_malloc(sizeof(t_philo), 1);
-        data->philo[i]->index = i + 1;
-        data->philo[i]->t_eat = data->t_eat;
-        data->philo[i]->t_sleep = data->t_sleep;
-        data->philo[i]->nbr_of_meal = data->nbr_of_meal;
-        data->philo[i]->t_die = data->t_die;
-        data->philo[i]->is_dead = data->dead_mtx;
-        data->philo[i]->fork = ft_malloc(sizeof(int), 1);
-        *(data->philo[i]->fork) = 1; 
-        data->philo[i]->flag = data->nbr_philo;
-        data->index = i;
-        get_the_forks(&data->philo[i], data);
-        init_philo(data->philo[i]);
+        fill_philo(&data, i);
         i++;
     }
     start_philo(data);
     create_monitor(data);
     join_every_thread(data);
+    if (data->is_dead[2] == 1)
+        print(data->philo[data->is_dead[0]], data->is_dead[1], 4);
     clear_all(data);
+    return (1);
 }
-
-// create array of forks // if the number is odd will take the right will be index and left index - 1 and reverse for other number
-// create the function routine will call eat sleep think
-// for eat will call take forks and lock the 2 of them and lock the eat means sleep time and unlock everything
-// for sleep will sleep
-// for think will sleep the 70% of t_die - get_current_time - last_meal of philo
-// create function moniteuring that loops on every thread to check if he die, if true will stop

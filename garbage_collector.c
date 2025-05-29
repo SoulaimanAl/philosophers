@@ -12,52 +12,52 @@
 
 #include "philo.h"
 
-void    ft_lstclear(t_gar **lst)
+void	ft_lstclear(t_gar **lst)
 {
-        t_gar   *d;
-        t_gar   *s;
+	t_gar	*d;
+	t_gar	*s;
 
-        if (lst == NULL || *lst == NULL)
-                return ;
-        d = *lst;
-        while (d)
-        {
-                s = d->next;
-                free(d->addr);
-                free(d);
-                d = s;
-        }
-        *lst = NULL;
+	if (lst == NULL || *lst == NULL)
+		return ;
+	d = *lst;
+	while (d)
+	{
+		s = d->next;
+		free(d->addr);
+		free(d);
+		d = s;
+	}
+	*lst = NULL;
 }
 
-t_gar   **garbage_list(void)
+t_gar	**garbage_list(void)
 {
-        static t_gar    *tail;
+	static t_gar	*tail;
 
-        return (&tail);
+	return (&tail);
 }
 
-void    add_to_the_list(t_gar **tail, t_gar *new)
+void	add_to_the_list(t_gar **tail, t_gar *new)
 {
-        if (!tail || !new)
-                return ;
-        new->next = *tail;
-        *tail = new;
+	if (!tail || !new)
+		return ;
+	new->next = *tail;
+	*tail = new;
 }
 
-void    *ft_malloc(int size, int bytes)
+void	*ft_malloc(int size, int bytes)
 {
-        void    *p;
-        t_gar   *new;
+	void	*p;
+	t_gar	*new;
 
-        new = malloc(sizeof(t_gar));
-        if (!new)
-                return (NULL);
-        new->addr = malloc(size * bytes);
-        if (!new->addr)
-                return (free(new), NULL);
-        p = new->addr;
-        new->next = NULL;
-        add_to_the_list(garbage_list(), new);
-        return (p);
+	new = malloc(sizeof(t_gar));
+	if (!new)
+		return (NULL);
+	new->addr = malloc(size * bytes);
+	if (!new->addr)
+		return (free(new), NULL);
+	p = new->addr;
+	new->next = NULL;
+	add_to_the_list(garbage_list(), new);
+	return (p);
 }
